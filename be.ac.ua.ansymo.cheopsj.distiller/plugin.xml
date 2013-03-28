@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="false"
+            id="be.ac.ua.ansymo.cheosj.distiller.FolderContribution"
+            objectClass="org.eclipse.core.resources.IFolder">
+         <menu
+               id="DistillerFromSVN.menu2"
+               label="Distiller"
+               path="additions">
+            <separator
+                  name="group">
+            </separator>
+         </menu>
+         <action
+               class="be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillChanges"
+               enablesFor="1"
+               id="DistillerFromSVN.action2"
+               label="Distill Changes"
+               menubarPath="DistillerFromSVN.menu2/group">
+         </action>
+         <action
+               class="be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillAdditionsFromCurrentVersion"
+               enablesFor="1"
+               id="DistillerFromSVN.action4"
+               label="Distill Additions"
+               menubarPath="DistillerFromSVN.menu2/group">
+         </action>
+      </objectContribution>
+      <objectContribution
+            objectClass="org.eclipse.jdt.core.IJavaProject"
+            id="be.ac.ua.ansymo.cheosj.distiller.ProjectContribution">
+         <menu
+               label="Distiller"
+               path="additions"
+               id="DistillerFromSVN.menu">
+            <separator
+                  name="group">
+            </separator>
+         </menu>
+         <action
+               label="Distill Changes"
+               class="be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillChanges"
+               menubarPath="DistillerFromSVN.menu/group"
+               enablesFor="1"
+               id="DistillerFromSVN.action1">
+         </action>
+         <action
+               class="be.ac.ua.ansymo.cheopsj.distiller.popup.actions.DistillAdditionsFromCurrentVersion"
+               enablesFor="1"
+               id="DistillerFromSVN.action3"
+               label="Distill Additions"
+               menubarPath="DistillerFromSVN.menu/group">
+         </action>
+      </objectContribution>
+      
+   </extension>
+
+</plugin>

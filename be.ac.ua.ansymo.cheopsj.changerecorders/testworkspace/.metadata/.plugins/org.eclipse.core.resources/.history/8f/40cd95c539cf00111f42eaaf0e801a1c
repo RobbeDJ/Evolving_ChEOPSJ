@@ -1,0 +1,9 @@
+package be.ac.ua.test.pack;
+
+public class TestClass {
+	public class Foo{
+		public class Fun{
+			
+		}
+	}
+}

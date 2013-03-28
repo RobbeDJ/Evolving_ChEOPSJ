@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+           point="org.eclipse.ui.commands">
+        <command
+              categoryId="be.ac.ua.ansymo.cheopsj.commands.category"
+              description="Find the tests relevant for these changes"
+              id="be.ac.ua.ansymo.cheopsj.commands.findTests"
+              name="Find Relevant Tests">
+        </command>
+     </extension>
+     <extension
+           point="org.eclipse.ui.handlers">
+     <handler
+              class="be.ac.ua.ansymo.cheopsj.testtool.handlers.FindRelevantTests"
+              commandId="be.ac.ua.ansymo.cheopsj.commands.findTests">
+        </handler>
+     </extension>
+     <extension
+           point="org.eclipse.ui.menus">
+           <menuContribution
+              locationURI="toolbar:be.ac.ua.ansymo.cheopsj.model.ui.view.changeinspector.ChangeView?before=persistency">
+           <command
+                 commandId="be.ac.ua.ansymo.cheopsj.commands.findTests"
+                 icon="icons/JUnitlogo.gif"
+                 style="push">
+           </command>
+           </menuContribution>
+     </extension>
+</plugin>

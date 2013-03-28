@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+     <extension
+           point="org.eclipse.ui.views">
+        <category
+              id="be.ac.ua.ansymo.cheopsj"
+              name="ChEOPSJ">
+        </category>
+        <view
+              category="be.ac.ua.ansymo.cheopsj"
+              class="be.ac.ua.ansymo.cheopsj.model.ui.view.changeinspector.ChangeView"
+              icon="icons/cheops.gif"
+              id="be.ac.ua.ansymo.cheopsj.model.ui.view.changeinspector.ChangeView"
+              name="ChangeInspector">
+        </view>
+        <view
+              category="be.ac.ua.ansymo.cheopsj"
+              class="be.ac.ua.ansymo.cheopsj.model.ui.views.changegraph.ZestChangeView"
+              icon="icons/cheops.gif"
+              id="be.ac.ua.ansymo.cheopsj.model.ui.view.changegraph.ZestChangeView"
+              name="ChangeGraph">
+        </view>
+     </extension>
+     <extension
+           point="org.eclipse.ui.commands">
+        <category
+              description="Commands related to the ChangeInspector"
+              id="be.ac.ua.ansymo.cheopsj.commands.category"
+              name="Changes">
+        </category>
+        <command
+              categoryId="be.ac.ua.ansymo.cheopsj.commands.category"
+              description="Open the Change Inspector if it is not already visible"
+              id="be.ac.ua.ansymo.cheopsj.commands.openView"
+              name="Open Change Inspector">
+        </command>
+        <command
+              categoryId="be.ac.ua.ansymo.cheopsj.commands.category"
+              description="Saves the changes to file"
+              id="be.ac.ua.ansymo.cheopsj.commands.saveState"
+              name="Save Changes">
+        </command>
+        <command
+              categoryId="be.ac.ua.ansymo.cheopsj.commands.category"
+              description="Load Changes from file"
+              id="be.ac.ua.ansymo.cheopsj.commands.loadState"
+              name="Load Changes">
+        </command>
+        <command
+              categoryId="be.ac.ua.ansymo.cheopsj.commands.category"
+              description="Refreshes the Zest view"
+              id="be.ac.ua.ansymo.cheopsj.commands.refreshZest"
+              name="Refresh Zest">
+        </command>
+        <command
+              categoryId="be.ac.ua.ansymo.cheopsj.commands.category"
+              description="Export Graph for opening in Groove"
+              id="be.ac.ua.ansymo.cheopsj.commands.grooveExport"
+              name="Groove Export">
+        </command>
+        <command
+              categoryId="be.ac.ua.ansymo.cheopsj.commands.category"
+              description="Delete&apos;s the entire model"
+              id="be.ac.ua.ansymo.cheopsj.commands.clearmodel"
+              name="Clear Model">
+        </command>
+     </extension>
+     <extension
+           point="org.eclipse.ui.handlers">
+        <handler
+              class="be.ac.ua.ansymo.cheopsj.model.ui.handlers.OpenChangeViewHandler"
+              commandId="be.ac.ua.ansymo.cheopsj.commands.openView">
+        </handler>
+        <handler
+              class="be.ac.ua.ansymo.cheopsj.model.ui.handlers.SaveStateHandler"
+              commandId="be.ac.ua.ansymo.cheopsj.commands.saveState">
+        </handler>
+        <handler
+              class="be.ac.ua.ansymo.cheopsj.model.ui.handlers.LoadStateHandler"
+              commandId="be.ac.ua.ansymo.cheopsj.commands.loadState">
+        </handler>
+        <handler
+              class="be.ac.ua.ansymo.cheopsj.model.ui.handlers.RefreshHandler"
+              commandId="be.ac.ua.ansymo.cheopsj.commands.refreshZest">
+        </handler>
+        <handler
+              class="be.ac.ua.ansymo.cheopsj.model.ui.handlers.ExportGrooveGraphHandler"
+              commandId="be.ac.ua.ansymo.cheopsj.commands.grooveExport">
+        </handler>
+        <handler
+              class="be.ac.ua.ansymo.cheopsj.model.ui.handlers.ClearChangeModel"
+              commandId="be.ac.ua.ansymo.cheopsj.commands.clearmodel">
+        </handler>
+     </extension>
+     <extension
+           point="org.eclipse.ui.menus">
+        <menuContribution
+              locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+           <toolbar
+                 id="be.ac.ua.ansymo.cheopsj.toolbars.main">
+              <command
+                    commandId="be.ac.ua.ansymo.cheopsj.commands.openView"
+                    icon="icons/cheops.gif"
+                    id="be.ac.ua.ansymo.cheopsj.toolbars.openChangeView"
+                    tooltip="Open the Change Inspector">
+              </command>
+           </toolbar>
+        </menuContribution>
+        <menuContribution
+              locationURI="toolbar:be.ac.ua.ansymo.cheopsj.model.ui.view.changeinspector.ChangeView?before=persistency">
+           <command
+                 commandId="be.ac.ua.ansymo.cheopsj.commands.saveState"
+                 icon="icons/export.gif"
+                 style="push">
+           </command>
+           <command
+                 commandId="be.ac.ua.ansymo.cheopsj.commands.loadState"
+                 icon="icons/import_wiz.gif"
+                 style="push">
+           </command>
+           
+        </menuContribution>
+        <menuContribution
+              locationURI="toolbar:be.ac.ua.ansymo.cheopsj.model.ui.view.changegraph.ZestChangeView?before=additions">
+           <command
+                 commandId="be.ac.ua.ansymo.cheopsj.commands.refreshZest"
+                 icon="icons/sample.gif"
+                 style="push">
+           </command>
+           <command
+                 commandId="be.ac.ua.ansymo.cheopsj.commands.grooveExport"
+                 icon="icons/groove.png"
+                 style="push">
+           </command>
+           <command
+                 commandId="be.ac.ua.ansymo.cheopsj.commands.clearmodel"
+                 icon="icons/delete.gif"
+                 style="push">
+           </command>
+        </menuContribution>
+     </extension>
+     <extension point="org.eclipse.ui.perspectiveExtensions">
+          <perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
+               <view
+                     id="be.ac.ua.ansymo.cheopsj.model.ui.view.changegraph.ZestChangeView"
+                     relationship="stack"
+                     relative="org.eclipse.jdt.ui.PackageExplorer"
+                     visible="false"/>
+               <view
+                     id="be.ac.ua.ansymo.cheopsj.model.ui.view.changeinspector.ChangeView"
+                     minimized="false"
+                     relationship="stack"
+                     relative="org.eclipse.ui.views.ProblemView"
+                     visible="false">
+               </view>
+          </perspectiveExtension>
+</extension>
+</plugin>

@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Model
+Bundle-SymbolicName: be.ac.ua.ansymo.cheopsj.model
+Bundle-Version: 1.0.1
+Bundle-Activator: be.ac.ua.ansymo.cheopsj.model.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.ui,
+ org.eclipse.jdt.core,
+ org.junit
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: be.ac.ua.ansymo.cheopsj.model,
+ be.ac.ua.ansymo.cheopsj.model.changes,
+ be.ac.ua.ansymo.cheopsj.model.famix

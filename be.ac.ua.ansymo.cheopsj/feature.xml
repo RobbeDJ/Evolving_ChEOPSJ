@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="be.ac.ua.ansymo.cheopsj"
+      label="Cheopsj"
+      version="1.0.1"
+      provider-name="Ansymo University of Antwerp"
+      plugin="be.ac.ua.ansymo.cheopsj.branding">
+
+   <description url="http://win.ua.ac.be/~qsoeten/other/cheopsj/">
+      Software is an ever-changing entity and frequently executed unit tests are the primary means to increase the confidence that the changed system continues to work as expected. Executing an entire test suite however can take a significant amount of time; much longer than developers are willing to wait before tackling the next change action. Our tool prototype ChEOPSJ may alleviate this problem by adopting a change-centric approach as it sits in the back of Eclipse and captures all changes made in the main editor while the developer is programming. The changes and the dependencies between them are analyzed to deduce which unit tests are relevant for a selected sequence of changes.
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <url>
+      <update label="Cheopsj" url="http://win.ua.ac.be/~qsoeten/other/cheopsj/update/"/>
+      <discovery label="ChEOPSJ Site" url="http://win.ua.ac.be/~qsoeten/other/cheopsj/"/>
+   </url>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.jdt.core" version="3.7.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="3.7.100" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.ui" version="3.7.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt.junit" version="3.7.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.zest.core" version="1.3.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.zest.layouts" version="1.1.0" match="greaterOrEqual"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.eclipse.team.svn.core"/>
+      <import plugin="org.eclipse.team.core"/>
+   </requires>
+
+   <plugin
+         id="be.ac.ua.ansymo.cheopsj.logger"
+         download-size="0"
+         install-size="0"
+         version="1.0.1"
+         unpack="false"/>
+
+   <plugin
+         id="be.ac.ua.ansymo.cheopsj.model"
+         download-size="0"
+         install-size="0"
+         version="1.0.1"
+         unpack="false"/>
+
+   <plugin
+         id="be.ac.ua.ansymo.cheopsj.testtool"
+         download-size="0"
+         install-size="0"
+         version="1.0.1"
+         unpack="false"/>
+
+   <plugin
+         id="be.ac.ua.ansymo.cheopsj.distiller"
+         download-size="0"
+         install-size="0"
+         version="1.0.1"
+         unpack="false"/>
+
+   <plugin
+         id="be.ac.ua.ansymo.cheopsj.branding"
+         download-size="0"
+         install-size="0"
+         version="1.0.1"
+         unpack="false"/>
+
+   <plugin
+         id="be.ac.ua.ansymo.cheopsj.model.ui"
+         download-size="0"
+         install-size="0"
+         version="1.0.1"
+         unpack="false"/>
+
+   <plugin
+         id="org.evolizer.changedistiller"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="be.ac.ua.ansymo.cheopsj.changerecorders"
+         download-size="0"
+         install-size="0"
+         version="1.0.1"
+         unpack="false"/>
+
+</feature>
