@@ -133,7 +133,7 @@ public class DistillChanges implements IObjectActionDelegate {
 		 */
 		//these checks are necessary to allow tests to set the repository before running
 		if (repositoryUrl == null || repositoryUrl == "") {
-			repositoryUrl = "https://subversion.assembla.com/svn/cheopsj-test/";
+			repositoryUrl  = "file:///Users/quinten/svn/cruisecontrol";
 		}
 		if (scms == null) {
 			scms = SupportedSCMEnum.SVN;
