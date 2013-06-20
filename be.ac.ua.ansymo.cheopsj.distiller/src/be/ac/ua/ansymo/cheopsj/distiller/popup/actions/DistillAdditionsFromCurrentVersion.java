@@ -49,7 +49,7 @@ public class DistillAdditionsFromCurrentVersion implements IObjectActionDelegate
 
 	private IResource selectedResource;
 	private IJavaProject javaProject;
-	private SVNConnector svnConnector;
+	//private SVNConnector svnConnector;
 
 
 	private IResource getProjectForSelection(ISelection selection){

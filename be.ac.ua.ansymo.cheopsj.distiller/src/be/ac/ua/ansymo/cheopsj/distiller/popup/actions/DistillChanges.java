@@ -33,9 +33,14 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 
+import org.eclipse.team.core.RepositoryProvider;
+import org.eclipse.team.svn.core.SVNTeamProvider;
+
 import be.ac.ua.ansymo.cheopsj.changerecorders.LocalVariableRecorder;
 import be.ac.ua.ansymo.cheopsj.changerecorders.MethodInvocationRecorder;
 import be.ac.ua.ansymo.cheopsj.distiller.cd.ChangeDistillerProxy;
+import be.ac.ua.ansymo.cheopsj.distiller.scmconnection.SCMConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.scmconnection.SCMLogEntryHandler;
 import be.ac.ua.ansymo.cheopsj.distiller.svnconnection.SVNConnector;
 import be.ac.ua.ansymo.cheopsj.distiller.svnconnection.SVNLogEntryHandler;
 import be.ac.ua.ansymo.cheopsj.logger.astdiffer.ASTComparator;
@@ -48,7 +53,15 @@ import be.ac.ua.ansymo.cheopsj.model.changes.Remove;
 public class DistillChanges implements IObjectActionDelegate {
 
 	private IProject selectedProject;
-	private SVNConnector svnConnector;
+	private IProject testSelectedProject;
+	private SCMConnector scmConnector;
+	private String repositoryUrl = "";
+	private String repositoryUser = "";
+	private String repositoryPass = "";
+	private SupportedSCMEnum scms;
+	
+	public DistillChanges() {
+	}
 	
 	private IProject getProjectForSelection(ISelection selection){
 		if(selection == null){ return null; }
@@ -59,7 +72,6 @@ public class DistillChanges implements IObjectActionDelegate {
 		} else if (selectedElement instanceof IJavaProject){
 			return ((IJavaProject) selectedElement).getProject();
 		}
-		
 		return null;
 	}
 	
@@ -69,6 +81,9 @@ public class DistillChanges implements IObjectActionDelegate {
 		ISelectionService selectionService = window.getSelectionService();
 		ISelection selection = selectionService.getSelection("org.eclipse.jdt.ui.PackageExplorer");
 		selectedProject = getProjectForSelection(selection);
+		if (selectedProject == null) {
+			selectedProject = testSelectedProject;
+		}
 	}
 	
 	private Shell getShell() {
@@ -111,6 +126,18 @@ public class DistillChanges implements IObjectActionDelegate {
 	@Override
 	public void run(IAction action) {
 		getSelectedProject();
+		//TODO: figger out correct repository link and scm system
+		/**
+		 * maybe make a menu with an string input for the repository and a combobox for the scm system
+		 * also add user and pass if read is not public
+		 */
+		//these checks are necessary to allow tests to set the repository before running
+		if (repositoryUrl == null || repositoryUrl == "") {
+			repositoryUrl = "https://subversion.assembla.com/svn/cheopsj-test/";
+		}
+		if (scms == null) {
+			scms = SupportedSCMEnum.SVN;
+		}
 		ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
 		try {
 			dialog.run(true, true, new IRunnableWithProgress() {
@@ -134,8 +161,12 @@ public class DistillChanges implements IObjectActionDelegate {
 		try {			
 			//TODO record additions for initial project!
 			File file = new File(selectedProject.getLocationURI());
-			svnConnector = new SVNConnector("", "");
-			svnConnector.initialize();
+
+            scmConnector = getConnector();
+
+			
+			//svnConnector = new SVNConnector("", "");
+			scmConnector.initialize();
 
 			//long rev = svnConnector.getCurrentRevision(file);//Get current revision number.
 			//long targetRev = svnConnector.getHeadRevisionNumber(file);//total nr of revisions
@@ -143,7 +174,7 @@ public class DistillChanges implements IObjectActionDelegate {
 			
 			long rev = 0;
 			//Get current revision number.
-			long targetRev = svnConnector.getCurrentRevision(file);
+			long targetRev = scmConnector.getCurrentRevision(file);
 			//long targetRev = 4;
 			int diff = (int) (targetRev - rev); //nr of revisions that will be processed
 			monitor.beginTask("Extracting changes", diff);
@@ -157,8 +188,8 @@ public class DistillChanges implements IObjectActionDelegate {
 					
 					double percent = ((double)rev/targetRev)*100;
 					monitor.subTask("from revision: " + rev + "/" + targetRev + " (" +(int)percent+ "%)");
-					SVNLogEntryHandler entryHandler = new SVNLogEntryHandler();
-					svnConnector.getCommitMessage(file, rev + 1, entryHandler); //Lookahead at changes in next revision!
+					SCMLogEntryHandler entryHandler = getHandler();
+					scmConnector.getCommitMessage(file, rev + 1, entryHandler); //Lookahead at changes in next revision!
 
 					Map<?, ?> changedPaths = entryHandler.getChangedPaths();
 					
@@ -191,9 +222,30 @@ public class DistillChanges implements IObjectActionDelegate {
 			e.printStackTrace();
 		}
 	}
+	
+	private SCMLogEntryHandler getHandler() {
+		SCMLogEntryHandler handler;
+		switch (scms) {
+			case SVN:
+				handler = new SVNLogEntryHandler();
+				return handler;
+			default:
+				return null;
+		}
+	}
+	private SCMConnector getConnector() {
+		SCMConnector connector;
+		switch (scms) {
+			case SVN:
+				connector = new SVNConnector(repositoryUrl, repositoryUser, repositoryPass);
+				return connector;
+			default:
+				return null;
+		}
+	}
 
 	private void extractChangesFromJavaFiles(long rev,
-			SVNLogEntryHandler entryHandler, Iterator<?> it) throws Exception {
+			SCMLogEntryHandler entryHandler, Iterator<?> it) throws Exception {
 		@SuppressWarnings("rawtypes")
 		Map.Entry pairs = (Map.Entry)it.next();
 		String path = (String)pairs.getKey();
@@ -202,12 +254,11 @@ public class DistillChanges implements IObjectActionDelegate {
 
 			SVNLogEntryPath logEntry = (SVNLogEntryPath)pairs.getValue();
 			ChangeExtractor extractor = new ChangeExtractor(entryHandler.getMessage(), entryHandler.getDate(), entryHandler.getUser());
-			
 			switch(logEntry.getType()){
 			case SVNLogEntryPath.TYPE_ADDED: 
 				//System.out.println("ADDED: " + path);
 				//This file was added --> create addition changes for everything in this file!									
-				String addedFileContents = svnConnector.getFileContents(path, rev + 1);
+				String addedFileContents = scmConnector.getFileContents(path, rev + 1);
 				extractor.storeClassAddition(addedFileContents);
 				extractor.storeFieldAdditions(addedFileContents);
 				extractor.storeMethodAdditions(addedFileContents);
@@ -216,7 +267,7 @@ public class DistillChanges implements IObjectActionDelegate {
 			case SVNLogEntryPath.TYPE_DELETED:
 				//System.out.println("DELETED: " + path);
 				//This file was removed --> create remove changes for everything in this file!
-				String removedFileContents = svnConnector.getFileContents(path, rev);
+				String removedFileContents = scmConnector.getFileContents(path, rev);
 				
 				extractor.storeMethodInvocationRemovals(removedFileContents);
 				extractor.storeMethodRemoval(removedFileContents);
@@ -226,8 +277,8 @@ public class DistillChanges implements IObjectActionDelegate {
 			case SVNLogEntryPath.TYPE_MODIFIED:
 				//System.out.println("CHANGED: " + path);									
 				//This file was modified --> run evolizer.ChangeDistiller on old and new files to find out differences.
-				String targetFileContents = svnConnector.getFileContents(path, rev + 1); 
-				String sourceFileContents = svnConnector.getFileContents(path, rev);  
+				String targetFileContents = scmConnector.getFileContents(path, rev + 1); 
+				String sourceFileContents = scmConnector.getFileContents(path, rev);  
 				
 				ChangeDistillerProxy cd = new ChangeDistillerProxy();
 				cd.copyOldFileFrom(sourceFileContents);
@@ -278,7 +329,7 @@ public class DistillChanges implements IObjectActionDelegate {
 	}
 	
 	private void updateOneRev(File file, long rev, IProgressMonitor monitor) throws CoreException{
-		svnConnector.updateToRevision(file, rev + 1, monitor);
+		scmConnector.updateToRevision(file, rev + 1, monitor);
 	}
 
 	@Override
@@ -288,5 +339,18 @@ public class DistillChanges implements IObjectActionDelegate {
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
 	}
-
+	public void setSelectedProject(IProject project) {
+		testSelectedProject = project;
+	}
+	public void setRepositoryUrl(String url) {
+		repositoryUrl = url;
+	}	
+	public void setRepositoryInfo(String url, String user, String pass) {
+		repositoryUrl = url;
+		repositoryUser = user;
+		repositoryPass = pass;
+	}
+	public void setSCMSystem(SupportedSCMEnum scm) {
+		scms = scm;
+	}
 }

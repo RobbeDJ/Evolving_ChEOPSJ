@@ -24,41 +24,49 @@ import org.tmatesoft.svn.core.wc.SVNUpdateClient;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-public class SVNConnector {
-	private String fSVNUrl = "file:///Users/quinten/svn/cruisecontrol"; //TODO extract url from selected project somehow
-	private String fSVNUserName = "";
-	private String fSVNUserPassword = "";
+import be.ac.ua.ansymo.cheopsj.distiller.scmconnection.SCMConnector;
+import be.ac.ua.ansymo.cheopsj.distiller.scmconnection.SCMLogEntryHandler;
+
+public class SVNConnector extends SCMConnector {
+
 	private SVNClientManager clientManager;
 	private SVNRepository repository = null;
 
 	/**
 	 * Constructor gets username and password to the svn repository
 	 */
-	public SVNConnector(String svnUserName, String svnUserPassword) {
-		fSVNUserName = svnUserName;
-		fSVNUserPassword = svnUserPassword;
+	public SVNConnector(String userName, String userPassword) {
+		super(userName, userPassword);
+	}
+	
+	/**
+	 * Constructor gets username and password to the svn repository
+	 */
+	public SVNConnector(String url, String userName, String userPassword) {
+		super(url, userName, userPassword);
 	}
 
 	/**
 	 * Initialize a few things. Create a ClientManager + Authenticate your username and password.
 	 */
+	@Override
 	public void initialize(){
 		setupLibrary();
 		ISVNOptions options = SVNWCUtil.createDefaultOptions(true);
 		ISVNAuthenticationManager authManager;
-		if ((fSVNUserName == null) && (fSVNUserPassword == null)) {
+		if ((fUserName == null) && (fUserPassword == null)) {
 			authManager = SVNWCUtil.createDefaultAuthenticationManager();
 		} else {
-			authManager = SVNWCUtil.createDefaultAuthenticationManager(fSVNUserName, fSVNUserPassword);
+			authManager = SVNWCUtil.createDefaultAuthenticationManager(fUserName, fUserPassword);
 		}
 		clientManager = SVNClientManager.newInstance(options, authManager);
 		try {
-			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(fSVNUrl));
+			repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(fUrl));
 			repository.setAuthenticationManager(authManager);
 		} catch (SVNException e) {
 			System.err
             .println("error while creating an SVNRepository for the location '"
-                    + fSVNUrl + "': " + e.getMessage());
+                    + fUrl + "': " + e.getMessage());
 			e.printStackTrace();
 		}
 	    
@@ -85,6 +93,7 @@ public class SVNConnector {
 	 * @param file the file that has to be updated (can be a directory)
 	 * @param revisionNumber the revision to which the file has to be updated
 	 */
+	@Override
 	public void updateToRevision(File file, long revisionNumber, IProgressMonitor monitor){		
 		monitor.subTask("Updating to revision " + revisionNumber);
 		try {
@@ -101,6 +110,7 @@ public class SVNConnector {
 	 * @param file the file for which we want to obtain the revision number (can be directory)
 	 * @return the revision number of the given file.
 	 */
+	@Override
 	public long getCurrentRevision(File file){
 		long rev = 0;
 		try {
@@ -120,6 +130,7 @@ public class SVNConnector {
 	 * @param file the given file for which we want to know what the latest revision number is (can be a directory)
 	 * @return the revision number of the latest revision of the given file
 	 */
+	@Override
 	public long getHeadRevisionNumber(File file) {
 		long rev = 0;
 		try {
@@ -134,17 +145,19 @@ public class SVNConnector {
 		return rev;
 	}
 	
-	public void getCommitMessage(File file, long revisionNumber, SVNLogEntryHandler handler){
+	@Override
+	public void getCommitMessage(File file, long revisionNumber, SCMLogEntryHandler handler){
 		try {
 			SVNLogClient logClient = clientManager.getLogClient();
 			SVNRevision revision = SVNRevision.create(revisionNumber);
 			File[] files = {file};
-			logClient.doLog(files, revision, revision, true, true, 1, handler);
+			logClient.doLog(files, revision, revision, true, true, 1, (SVNLogEntryHandler)handler);
 		} catch (SVNException e) {
 			//e.printStackTrace();
 		}
 	}
 	
+	@Override
 	public String getFileContents(String filePath, long revision){
 		SVNProperties fileProperties = new SVNProperties();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
